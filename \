@@ -1,0 +1,73 @@
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use web_sys::{console,Element,HtmlCanvasElement};
+
+
+// When the `wee_alloc` feature is enabled, this uses `wee_alloc` as the global
+// allocator.
+//
+// If you don't want to use `wee_alloc`, you can safely delete this.
+#[cfg(feature = "wee_alloc")]
+#[global_allocator]
+static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
+
+pub struct Point{
+    pub x: i32,
+    pub y: i32
+
+}
+
+pub struct Line(Point, Point);
+
+pub struct Canvas{
+   pub lines: Vec<Line>,
+   canvas_ref : HtmlCanvasElement
+}
+
+#[wasm_bindgen]
+impl Canvas{
+    fn draw(&self){
+        let context = self.canvas_ref
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .dyn_into::<web_sys::CanvasRenderingContext2d>()
+            .unwrap();
+        context.move_to(50.0,50.0);
+        context.line_to(100.0, 100.0);
+    }
+
+    fn new(canvas: HtmlCanvasElement) -> Canvas{
+        Canvas{
+            canvas_ref: canvas,
+            lines: vec![]
+        }
+    }
+}
+
+#[wasm_bindgen(start)]
+pub fn start(){
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas_ref = document.get_element_by_id("canvas").unwrap();
+    let canvas: web_sys::HtmlCanvasElement = canvas_ref
+        .dyn_into::<web_sys::HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
+    Canvas::new(canvas);
+}
+
+#[wasm_bindgen]
+pub struct Image{
+
+}
+
+#[wasm_bindgen]
+impl Image {
+    pub fn new() -> Image {
+        Image{}
+    }
+
+    pub fn chuj(&self) -> String {
+        return "chuj".to_string()
+    }
+}
