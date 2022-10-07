@@ -80,7 +80,11 @@ fn check_line(l1: (f64,f64), l2: (f64,f64),p: (f64,f64)) -> bool {
     if !(p.0 > l1.0.min(l2.0) && p.0 < l1.0.max(l2.0) && p.1 > l1.1.min(l2.1) && p.1 < l1.1.max(l2.1)) {
         return false;
     }
-    (((l2.0 - l1.0)*(l1.1 - p.1) - (l1.0-p.0)*(l2.1-l1.1)).abs())/(((l2.0 - l1.0)*(l2.0 - l1.0) + (l2.1 - l1.1)*(l2.1 - l1.1)).sqrt()) < 10.0
+    (((l2.0 - l1.0)*(l1.1 - p.1) - (l1.0-p.0)*(l2.1-l1.1)).abs())/(((l2.0 - l1.0)*(l2.0 - l1.0) + (l2.1 - l1.1)*(l2.1 - l1.1)).sqrt()) < 20.0
+}
+
+fn calculate_point_position(l1: (f64,f64), l2: (f64,f64)) -> (f64,f64) {
+    (l1.0.min(l2.0) + (l1.0 - l2.0).abs()/2.0, l1.1.min(l2.1) + (l1.1 - l2.1).abs()/2.0)
 }
 
 impl Polygon {
@@ -135,7 +139,31 @@ impl Polygon {
         None
     }
 
-    fn check_del(&mut self,context: &CanvasRenderingContext2d, x: f64, y: f64) -> Option<bool> {
+    fn check_split(&mut self,context: &CanvasRenderingContext2d, x: f64, y: f64, new_id: i32) -> Option<()> {
+        let mut i = 0;
+        while i<self.lines.len() {
+            let l1 = self.get_point_by_id(self.lines[i].points.0);
+            let l2 = self.get_point_by_id(self.lines[i].points.1);
+            if check_line(l1, l2, (x,y)) {
+                let mut j = 0;
+                while j < self.points.len() {
+                    if self.points[j].id == self.lines[i].points.0 {
+                        break;
+                    }
+                    j = j + 1;
+                }
+                let new_point_pos = calculate_point_position(l1, l2);
+                self.points.insert(j, Point { x: new_point_pos.0, y: new_point_pos.1, id: new_id });
+                self.lines = get_lines(self.points.iter().collect());
+                self.center = get_center(&self.points);
+                return Some(());
+            }
+            i = i + 1;
+        }
+        None
+    }
+
+    fn check_del(&mut self, x: f64, y: f64) -> Option<bool> {
         if check_point((self.center.x, self.center.y), (x,y)) {
             return Some(true);
         }
@@ -145,6 +173,7 @@ impl Polygon {
             if check_point((self.points[i].x, self.points[i].y), (x,y)) {
                 self.points.remove(i);
                 self.lines = get_lines(self.points.iter().collect());
+                self.center = get_center(&self.points);
                 return Some(false);
             }
             i = i + 1;
@@ -158,6 +187,7 @@ impl Polygon {
                 self.remove_point_of_id(self.lines[i].points.0);
                 self.remove_point_of_id(self.lines[i].points.1);
                 self.lines = get_lines(self.points.iter().collect());
+                self.center = get_center(&self.points);
                 return Some(false);
             }
             i = i + 1;
@@ -271,7 +301,15 @@ impl Canvas{
                 self.draw();
             },
             State::Highlight => {
-
+                self.draw();
+                let mut i = 0;
+                while i<self.polygons.len() {
+                    match self.polygons[i].check_split(&self.context, x, y, self.current_id){
+                        Some(()) => {self.current_id = self.current_id + 1; break;},
+                        _ => {}
+                    }
+                    i = i+1;
+                }
             }
         }
     }
@@ -323,7 +361,7 @@ impl Canvas{
                 self.draw();
                 let mut i = 0;
                 while i<self.polygons.len() {
-                    match self.polygons[i].check_del(&self.context ,x ,y){
+                    match self.polygons[i].check_del(x, y){
                         Some(false) => {
                             if self.polygons[i].points.len() < 3 {
                                 self.polygons.remove(i);
