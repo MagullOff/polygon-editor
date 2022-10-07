@@ -139,7 +139,7 @@ impl Polygon {
         None
     }
 
-    fn check_split(&mut self,context: &CanvasRenderingContext2d, x: f64, y: f64, new_id: i32) -> Option<()> {
+    fn check_split(&mut self, x: f64, y: f64, new_id: i32) -> Option<()> {
         let mut i = 0;
         while i<self.lines.len() {
             let l1 = self.get_point_by_id(self.lines[i].points.0);
@@ -304,7 +304,7 @@ impl Canvas{
                 self.draw();
                 let mut i = 0;
                 while i<self.polygons.len() {
-                    match self.polygons[i].check_split(&self.context, x, y, self.current_id){
+                    match self.polygons[i].check_split(x, y, self.current_id){
                         Some(()) => {self.current_id = self.current_id + 1; break;},
                         _ => {}
                     }
