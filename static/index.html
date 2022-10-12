@@ -2,14 +2,54 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>My Rust + Webpack project!</title>
+    <title>QUADRUST</title>
   </head>
   <body>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" type="text/css">
+
+    <div class="container ">
+        <div class="header">
+            <h1>QUADRUST</h1>
+        </div>
+        <div class="sidebar">
+            <div class="modes">
+                <div id="Edit" class="activeMode">
+                    <img src="add-icon.png"/>   
+                    <div>Create</div>
+                </div>
+                <div id="Highlight">
+                    <img src="edit-icon.png"/>   
+                    <div>Edit</div>
+                </div>
+                <div id="Split">
+                    <img src="rules-icon.png"/>   
+                    <div>Rules</div>
+                </div>
+            </div>
+            <div class="details">
+
+            </div>
+            <div class="settings">
+              <button id="Help">Need help</button>
+              <button id="Scene">Default scene</button>
+              <button id="Algorithm">Generate using Bresenham</button>
+            </div>
+        </div>
+        <div class="canvasContainer">
+          <div class="cords">x:0.0 y:0.0</div>
+          <canvas id="board"></canvas>
+        </div>
+    </div>
+    <div class="modalContainer ">
+      <div class="modalContent">
+        <img class="closeModal" src="https://img.icons8.com/ios-glyphs/344/delete-sign.png" alt="x"/>
+        help :)
+      </div>
+    </div>
     <script src="index.js"></script>
-    <canvas id="board" width="1000" height="700" style="border:black 3px solid"></canvas>
-    <input type="radio" id="Edit" name="age" value="Highlight" checked>
-    <label for="Edit">Edit</label><br>
-    <input type="radio" id="Highlight" name="age" value="Highlight">
-    <label for="Highlight">Highlight</label><br>
   </body>
+
 </html>
