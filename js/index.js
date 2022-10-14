@@ -8,14 +8,15 @@ canvas.width = boundingRect.width
 
 const cords = document.querySelector(".cords");
 
-const radioEdit = document.getElementById("Edit");
-const radioHl = document.getElementById("Highlight");
-const radioSplit = document.getElementById("Split");
+const radioCreate = document.querySelector("#Edit");
+const radioEdit = document.querySelector("#Highlight");
+const radioRules = document.querySelector("#Split");
 
 const container = document.querySelector(".container");
 const modalContainer = document.querySelector(".modalContainer");
 
 const helpExitButton = document.querySelector(".closeModal");
+const sceneButton = document.querySelector("#Scene");
 const helpButton = document.querySelector("#Help");
 
 helpExitButton.onclick = () => {
@@ -29,19 +30,15 @@ helpButton.onclick = () => {
 }
 
 const setPressedButton = (radioObject) => {
+    radioCreate.classList.remove("activeMode");
     radioEdit.classList.remove("activeMode");
-    radioHl.classList.remove("activeMode");
-    radioSplit.classList.remove("activeMode");
+    radioRules.classList.remove("activeMode");
 
     radioObject.classList.add("activeMode");
 }
 
-async function main() {
+async function setHandlers() {
     const lib = await import("../pkg/index.js").catch(console.error);
-    const canvas = document.getElementById("board");
-
-    const sceneButton = document.getElementById("Scene");
-
     const canvasRef = lib.Canvas.new(document);
 
     const elemLeft = canvas.offsetLeft + canvas.clientLeft;
@@ -53,15 +50,16 @@ async function main() {
         canvas.width = currentBoundingRect.width
         canvasRef.draw();
     };
+
     canvas.oncontextmenu = (event) => {
         const x = event.pageX - elemLeft,
             y = event.pageY - elemTop;
         event.preventDefault();
         console.log('right');
         canvasRef.on_right_click(x, y);
+        console.log('right');
     };
 
-    // mouse down 
     canvas.onmousedown = (event) => {
         const x = event.pageX - elemLeft,
             y = event.pageY - elemTop;
@@ -70,7 +68,6 @@ async function main() {
             canvasRef.on_down_click(x,y);
     }
 
-    // mouse up
     canvas.onclick = (event) => {
         const x = event.pageX - elemLeft,
             y = event.pageY - elemTop;
@@ -86,22 +83,22 @@ async function main() {
         canvasRef.on_move_mouse(x, y);
     };
 
-    radioEdit.onclick = () => {
+    radioCreate.onclick = () => {
         console.log('radion click');
+        setPressedButton(radioCreate);
+        canvasRef.set_create_state();
+    };
+
+    radioEdit.onclick = () => {
+        console.log('highlight click');
         setPressedButton(radioEdit);
         canvasRef.set_edit_state();
     };
 
-    radioHl.onclick = () => {
+    radioRules.onclick = () => {
         console.log('highlight click');
-        setPressedButton(radioHl);
-        canvasRef.set_highlight_state();
-    };
-
-    radioSplit.onclick = () => {
-        console.log('highlight click');
-        setPressedButton(radioSplit);
-        canvasRef.set_split_state();
+        setPressedButton(radioRules);
+        canvasRef.set_rules_state();
     };
 
     sceneButton.onclick = () => {
@@ -110,4 +107,4 @@ async function main() {
     }
 }
 
-main();
+setHandlers();

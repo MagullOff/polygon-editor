@@ -14,3 +14,6 @@ pub struct Point{
     pub y: f64,
     pub id: u32
 }
+
+#[derive(Clone, Copy)]
+pub struct PointCords(pub f64, pub f64);

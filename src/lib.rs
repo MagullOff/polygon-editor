@@ -6,3 +6,4 @@ pub mod canvas;
 pub mod data_models;
 pub mod polygon;
 pub mod utils;
+pub mod draw;
