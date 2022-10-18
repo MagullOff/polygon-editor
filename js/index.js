@@ -19,6 +19,8 @@ const helpExitButton = document.querySelector(".closeModal");
 const sceneButton = document.querySelector("#Scene");
 const helpButton = document.querySelector("#Help");
 
+const bresenhamButton = document.querySelector("#Algorithm");
+
 helpExitButton.onclick = () => {
     container.classList.remove("modalShown");
     modalContainer.classList.remove("modalShown");
@@ -104,6 +106,11 @@ async function setHandlers() {
     sceneButton.onclick = () => {
         console.log('predefined scene click');
         canvasRef.set_predefined_scene();
+    }
+
+    bresenhamButton.onclick = () => {
+        console.log('bresenham click');
+        canvasRef.draw_bresenham();
     }
 }
 

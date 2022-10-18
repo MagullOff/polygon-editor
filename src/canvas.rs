@@ -58,14 +58,23 @@ impl Canvas{
             .iter()
             .for_each(|Point{x,y, id}| {
                 if *id != 0 {
-                    self.context.set_line_width(7.0);
+                    self.context.set_line_width(4.0);
                     self.context.arc(*x, *y, 5.0, 0.0, 2.0*3.14);
+                    self.context.fill();
                 }
                 self.context.set_line_width(3.0);
                 self.context.line_to(*x,*y);
                 self.context.move_to(*x,*y);
             });
-        self.context.stroke();
+            self.context.stroke();
+    }
+
+    pub fn draw_bresenham(&self){
+        clear_canvas(&self.context);
+
+        self.polygons
+            .iter()
+            .for_each(|polygon| polygon.draw_bresenham(&self.context));
     }
 
     pub fn set_create_state(&mut self){
@@ -145,6 +154,7 @@ impl Canvas{
         };
 
         self.polygons = vec![polygon1, polygon2];
+        self.current_points = vec![];
         
         self.draw();
     }
@@ -225,6 +235,9 @@ impl Canvas{
 
                         polygon.center.0 = x;
                         polygon.center.1 = y;
+
+                        self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
+                        self.draw();
                         highlight_point(&self.context, PointCords(x,y));
                     },
                     PressedObject::Line(line_id, offset) => {
@@ -243,33 +256,37 @@ impl Canvas{
                         polygon.modify_point_coordinates(p1_id, difference_vec);
                         polygon.modify_point_coordinates(p2_id, difference_vec);
 
+                        self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
+                        self.draw();
                         highlight_line(&self.context, p1_val, p2_val);
                     },
                     PressedObject::Point(point_id) => {
                         let mut point = self.polygons[*id].get_point_reference(*point_id);
                         point.x = x;
                         point.y = y;
+                        self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
+                        self.draw();
                         highlight_point(&self.context, PointCords(x,y));
                     }
                 }
-                self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
-                self.draw();
             },
             _ => {
                 self.draw();
                 let mut i = 0;
                 while i<self.polygons.len() {
                     match self.polygons[i].check_hover(x,y){
-                        Some(PressedObject::Center) => {highlight_point(&self.context, self.polygons[i].center)},
+                        Some(PressedObject::Center) => {highlight_point(&self.context, self.polygons[i].center); break;},
                         Some(PressedObject::Line(id, _)) =>{
                             let (p1_id, p2_id) = self.polygons[i].get_line_by_id(id);
                             let p1 = self.polygons[i].get_point_by_id(p1_id);
                             let p2 = self.polygons[i].get_point_by_id(p2_id);
                             highlight_line(&self.context, p1, p2);
+                            break;
                         },
                         Some(PressedObject::Point(id)) => {
                             let hovered_point_cords = self.polygons[i].get_point_by_id(id);
                             highlight_point(&self.context, hovered_point_cords);
+                            break;
                         }
                         None => {}
                     }
@@ -314,6 +331,7 @@ impl Canvas{
                             current_polygon.lines = calcualate_new_lines(current_polygon.points.iter().collect());
                             current_polygon.center = get_centroid(&current_polygon.points);
                             self.current_id = self.current_id + 1;
+                            self.draw();
                             break;
                         },
                         Some(PressedObject::Point(id)) => {
