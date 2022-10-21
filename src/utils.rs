@@ -1,5 +1,5 @@
 use rand::Rng;
-use crate::data_models::*;
+use crate::{data_models::*, polygon::Polygon};
 
 const LINE_MARGIN: f64 = 15.0;
 const POINT_MARGIN: f64 = 200.0;
@@ -18,7 +18,8 @@ pub fn calcualate_new_lines<'a>(points: Vec<&'a Point>) -> Vec<Line>{
             lines.push(Line {
                 points: (last_point_id, point.id),
                 length: get_line_length(PointCords(last_point.x, last_point.y), PointCords(point.x, point.y)),
-                id: rng.gen()
+                id: rng.gen(),
+                is_const: false
             });
             last_point = point;
             last_point_id = point.id;
@@ -61,4 +62,28 @@ pub fn get_centroid(points: &Vec<Point>) -> PointCords {
             sum_x = sum_x + point.x;
         });
     PointCords(sum_x/f64::from(points.len() as u8),sum_y/f64::from(points.len() as u8))
+}
+
+pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, Line) {
+    let mut rng = rand::thread_rng();
+    (
+        Line {
+            id: rng.gen(),
+            points: (x, s),
+            length: get_line_length(
+                polygon.get_point_by_id(x),
+                polygon.get_point_by_id(s)
+            ),
+            is_const: false
+        },
+        Line{
+            id: rng.gen(),
+            points: (s, y),
+            length: get_line_length(
+                polygon.get_point_by_id(s),
+                polygon.get_point_by_id(y)
+            ),
+            is_const: false
+        }
+    )
 }

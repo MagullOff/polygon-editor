@@ -1,6 +1,10 @@
+use std::ptr::null;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::Document;
+use web_sys::Element;
+use web_sys::HtmlInputElement;
 use web_sys::{CanvasRenderingContext2d};
 use crate::polygon::*;
 use crate::data_models::*;
@@ -10,7 +14,7 @@ use crate::draw::*;
 pub enum State{
     Create,
     Edit,
-    Rules,
+    Rules(Option<(usize, u32)>),
     Moving((usize, PressedObject))
 }
 
@@ -27,6 +31,8 @@ pub struct Canvas{
    current_points: Vec<Point>,
    polygons: Vec<Polygon>,
    current_id: u32,
+   length_selector: HtmlInputElement,
+   is_const: HtmlInputElement
 }
 
 #[wasm_bindgen]
@@ -89,7 +95,7 @@ impl Canvas{
     }
 
     pub fn set_rules_state(&mut self){
-        self.state = State::Rules;
+        self.state = State::Rules(None);
     }
 
     pub fn set_predefined_scene(&mut self){
@@ -159,7 +165,47 @@ impl Canvas{
         self.draw();
     }
     
+    pub fn set_line_length(&mut self){
+        match self.state {
+            State::Rules(Some((polygon_id, line_id))) => {
+                let mut line = self.polygons[polygon_id].get_line_reference(line_id);
+                let new_length = self.length_selector.value_as_number();
+                let extention = (new_length - line.length)/2.0;
+                line.length = new_length;
+                let (p1_id, p2_id) = line.points;
+                self.polygons[polygon_id].correct_line_mid(extention, line_id);
+                self.polygons[polygon_id].correct_line_length_right(p2_id);
+                self.polygons[polygon_id].correct_line_length_left(p1_id);
+                self.polygons[polygon_id].recalculate();
+                self.draw();
+            },
+            _ => {}
+        }
+    }
+
+    pub fn set_const_state(&mut self){
+        match self.state {
+            State::Rules(Some((polygon_id, line_id))) => {
+                let mut line = self.polygons[polygon_id].get_line_reference(line_id);
+                line.is_const = self.is_const.checked();
+            },
+            _ => {}
+        }
+    }
+
     pub fn new(document: Document) -> Canvas{
+        let num_field_ref = document.get_element_by_id("LengthSelector").unwrap();
+        let num_field: web_sys::HtmlInputElement = num_field_ref
+            .dyn_into::<web_sys::HtmlInputElement>()
+            .map_err(|_| ())
+            .unwrap();
+
+        let is_const_ref = document.get_element_by_id("IsConst").unwrap();
+        let is_const: web_sys::HtmlInputElement = is_const_ref
+            .dyn_into::<web_sys::HtmlInputElement>()
+            .map_err(|_| ())
+            .unwrap();
+
         let canvas_ref = document.get_element_by_id("board").unwrap();
         let canvas: web_sys::HtmlCanvasElement = canvas_ref
             .dyn_into::<web_sys::HtmlCanvasElement>()
@@ -177,7 +223,9 @@ impl Canvas{
             state: State::Create,
             current_points: vec![],
             current_id: 1,
-            polygons: vec![]
+            polygons: vec![],
+            is_const: is_const,
+            length_selector: num_field
         }
     }
 
@@ -206,8 +254,33 @@ impl Canvas{
                 clear_canvas(&self.context);
                 self.draw();
             },
-            State::Rules => {},
             State::Moving(_) => {self.state = State::Edit},
+            State::Rules(_) => {
+                self.draw();
+                use web_sys::console;
+                let mut i = 0;
+                while i<self.polygons.len() {
+                    match self.polygons[i].check_hover(x, y){
+                        Some(PressedObject::Line(id,_)) => {
+                            self.state = State::Rules(Some((i, id)));
+                            console::log_2(
+                                &JsValue::from_f64(i as f64),
+                                &JsValue::from_f64(id as f64)
+                            );
+                            let (x_id,y_id) = self.polygons[i].get_line_by_id(id);
+                            let x = self.polygons[i].get_point_by_id(x_id);
+                            let y = self.polygons[i].get_point_by_id(y_id);
+                            highlight_line(&self.context, x, y);
+                            let line = self.polygons[i].get_line_reference(id);
+                            self.length_selector.set_value(format!("{:.2}", line.length).as_str());
+                            self.is_const.set_checked(line.is_const);
+                            break;
+                        },
+                        _ => {}
+                    }
+                    i = i+1;
+                }
+            },
             _ => {},
         }
     }
@@ -242,9 +315,7 @@ impl Canvas{
                     },
                     PressedObject::Line(line_id, offset) => {
                         let polygon = &mut self.polygons[*id];
-                        let line = polygon.get_line_reference(*line_id);
-                        let p1_id = line.points.0;
-                        let p2_id = line.points.1;
+                        let (p1_id, p2_id)= polygon.get_line_by_id(*line_id);
 
                         let p1_val = polygon.get_point_by_id(p1_id);
                         let p2_val = polygon.get_point_by_id(p2_id);
@@ -255,20 +326,45 @@ impl Canvas{
 
                         polygon.modify_point_coordinates(p1_id, difference_vec);
                         polygon.modify_point_coordinates(p2_id, difference_vec);
-
-                        self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
-                        self.draw();
                         highlight_line(&self.context, p1_val, p2_val);
+                        polygon.correct_line_length_left(p1_id);
+                        polygon.correct_line_length_right(p2_id);
+                        polygon.recalculate();
+                        self.draw();
                     },
                     PressedObject::Point(point_id) => {
                         let mut point = self.polygons[*id].get_point_reference(*point_id);
                         point.x = x;
                         point.y = y;
-                        self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
+                        self.polygons[*id].correct_line_length_left(*point_id);
+                        self.polygons[*id].correct_line_length_right(*point_id);
+                        self.polygons[*id].recalculate();
                         self.draw();
                         highlight_point(&self.context, PointCords(x,y));
                     }
                 }
+            },
+            State::Rules(Some((polygon_id, line_id))) => {
+                self.draw();
+                let mut i = 0;
+                while i<self.polygons.len() {
+                    match self.polygons[i].check_hover(x,y){
+                        Some(PressedObject::Line(id, _)) =>{
+                            let (p1_id, p2_id) = self.polygons[i].get_line_by_id(id);
+                            let p1 = self.polygons[i].get_point_by_id(p1_id);
+                            let p2 = self.polygons[i].get_point_by_id(p2_id);
+                            highlight_line(&self.context, p1, p2);
+                            break;
+                        },
+                        _ => {}
+                    }
+                    i = i+1;
+                }
+
+                let (x_id,y_id) = self.polygons[*polygon_id].get_line_by_id(*line_id);
+                let x = self.polygons[*polygon_id].get_point_by_id(x_id);
+                let y = self.polygons[*polygon_id].get_point_by_id(y_id);
+                highlight_line(&self.context, x, y);
             },
             _ => {
                 self.draw();
@@ -328,7 +424,17 @@ impl Canvas{
                             }
                             let new_point_pos = calculate_middle_point(p1, p2);
                             current_polygon.points.insert(j, Point { x: new_point_pos.0, y: new_point_pos.1, id: self.current_id});
-                            current_polygon.lines = calcualate_new_lines(current_polygon.points.iter().collect());
+
+                            j = 0;
+                            while j < current_polygon.lines.len() {
+                                if current_polygon.lines[j].id == id {
+                                    break;
+                                }
+                                j = j + 1;
+                            }
+                            let (l1, l2) = get_new_split_lines(current_polygon, p1_id, p2_id, self.current_id);
+                            current_polygon.lines[j] = l1;
+                            current_polygon.lines.insert(j+1, l2);
                             current_polygon.center = get_centroid(&current_polygon.points);
                             self.current_id = self.current_id + 1;
                             self.draw();
@@ -352,7 +458,7 @@ impl Canvas{
                     i = i+1;
                 }
                 self.draw();
-            }
+            },
             _ => {}
         }
     }

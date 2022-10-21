@@ -21,6 +21,9 @@ const helpButton = document.querySelector("#Help");
 
 const bresenhamButton = document.querySelector("#Algorithm");
 
+const lengthSelector = document.querySelector('#LengthSelector');
+const isLengthConst = document.querySelector('#IsConst');
+
 helpExitButton.onclick = () => {
     container.classList.remove("modalShown");
     modalContainer.classList.remove("modalShown");
@@ -98,7 +101,7 @@ async function setHandlers() {
     };
 
     radioRules.onclick = () => {
-        console.log('highlight click');
+        console.log('rules click');
         setPressedButton(radioRules);
         canvasRef.set_rules_state();
     };
@@ -111,6 +114,16 @@ async function setHandlers() {
     bresenhamButton.onclick = () => {
         console.log('bresenham click');
         canvasRef.draw_bresenham();
+    }
+
+    lengthSelector.onchange = (event) => {
+        console.log('set new length', event.target.value);
+        canvasRef.set_line_length();
+    }
+
+    isLengthConst.onchange = (event) => {
+        console.log('const change', event.target.checked);
+        canvasRef.set_const_state();
     }
 }
 
