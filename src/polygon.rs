@@ -101,6 +101,25 @@ impl Polygon {
             i = i + 1;
         }
     }
+
+    pub fn get_line_relation(&self, line_id: u32) -> Option<u32> {
+        self.lines
+            .iter()
+            .find(|line| line.id == line_id)
+            .unwrap()
+            .relation
+    }
+
+    pub fn set_relation(&mut self, line_id: u32, related_line_id: u32){
+        let mut i = 0;
+        while i < self.lines.len() {
+            if self.lines[i].id == line_id {
+                self.lines[i].relation = Some(related_line_id);
+                break;
+            }
+            i = i + 1;
+        }
+    }
 }
 
 pub struct Polygon {

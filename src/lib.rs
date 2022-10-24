@@ -7,4 +7,4 @@ pub mod data_models;
 pub mod polygon;
 pub mod utils;
 pub mod draw;
-pub mod relations;
+pub mod bresenham;

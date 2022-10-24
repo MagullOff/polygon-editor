@@ -114,7 +114,6 @@ async function setHandlers() {
     bresenhamButton.onclick = () => {
         console.log('bresenham click');
         canvasRef.draw_bresenham();
-        canvasRef.print_relations()
     }
 
     lengthSelector.onchange = (event) => {

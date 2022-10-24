@@ -19,7 +19,8 @@ pub fn calcualate_new_lines<'a>(points: Vec<&'a Point>) -> Vec<Line>{
                 points: (last_point_id, point.id),
                 length: get_line_length(PointCords(last_point.x, last_point.y), PointCords(point.x, point.y)),
                 id: rng.gen(),
-                is_const: false
+                is_const: false,
+                relation: None
             });
             last_point = point;
             last_point_id = point.id;
@@ -74,7 +75,8 @@ pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, 
                 polygon.get_point_by_id(x),
                 polygon.get_point_by_id(s)
             ),
-            is_const: false
+            is_const: false,
+            relation: None
         },
         Line{
             id: rng.gen(),
@@ -83,7 +85,8 @@ pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, 
                 polygon.get_point_by_id(s),
                 polygon.get_point_by_id(y)
             ),
-            is_const: false
+            is_const: false,
+            relation: None
         }
     )
 }

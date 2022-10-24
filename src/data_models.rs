@@ -3,7 +3,8 @@ pub struct Line{
     pub points: (u32, u32),
     pub length: f64,
     pub id:  u32,
-    pub is_const: bool
+    pub is_const: bool,
+    pub relation: Option<u32>
 }
 
 #[derive(Copy,Clone)]
