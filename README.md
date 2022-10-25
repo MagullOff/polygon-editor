@@ -20,10 +20,10 @@ W lewym dolnym rogu znajdują się 3 przyciski. Ich kliknięcie odpowiada za:
 ## Założenia programu
 Program zakłada, że w danym poligonie nie wszystkie krawędzie mają stale zdefiniowaną długość.
 
-Algorytm relacji polega na zmianie wierzchołków krawędzi kolejno w obie strony od edytowanego wierzchołka dopóki nie trafimy na krawędź nie objętą żadną relacją. Jeśli krawędź jest objęta relacją stałej długości, odpowiedni wierzchołek jest przesuwany aby zachować tą długość i nie zmieniać obecnego kierunku krawędzi. Jeśli krawędź jest w relacji równoległości, poprawiamy drugą linie z relacji. Podczas działania tego algorytmu oznaczamy odwiedzone już krawędzi, co prowadzi do rzadkich przypadków brzegowych, gdy na linie ma wpływ wiele relacji, w których zachowanie nie jest zdefiniowane.
+Algorytm relacji polega na zmianie wierzchołków krawędzi kolejno w obie strony od edytowanego wierzchołka dopóki nie trafimy na krawędź nie objętą żadną relacją. Jeśli krawędź jest objęta relacją stałej długości, odpowiedni wierzchołek jest przesuwany aby zachować tą długość i nie zmieniać obecnego kierunku krawędzi. Jeśli krawędź jest w relacji równoległości, poprawiamy drugą linie z relacji. Podczas działania tego algorytmu oznaczamy odwiedzone już krawędzi aby więcej ich nie modyfikować. Program nie posiada zdefiniowanego zachowania gdy wszystkie linie wielokąta są objęte relacją stałej długości.
 
 ### Instrukcja uruchomienia
-Poniżej znajduje się automatycznie wygenerowana instrukcja uruchomienia programu. Oprócz informacji zawartych poniżej wspomnieć należy o:
+Poniżej znajduje się automatycznie wygenerowana instrukcja uruchomienia programu. Oprócz informacji w niej zawartych wspomnieć należy o:
 1. Instalacji nodejs i npm
 2. instalacji rusta
 3. instalacji paczki rust do webassembly za pomocą komendy ```cargo install wasm-pack```
