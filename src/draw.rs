@@ -93,3 +93,51 @@ pub fn highlight_line(context: &CanvasRenderingContext2d, l1: PointCords, l2: Po
     context.set_stroke_style(&JsValue::from_str(BASIC_COLOR));
 }
 
+pub fn draw_quadratic_bezier(canvas: &CanvasRenderingContext2d, p1: PointCords, p2: PointCords, p3: PointCords) {
+    for i in 0..100 {
+        let j = (i as f64) * 0.01;
+        let xa = get_pt( p1.0 ,p2.0 , j );
+        let ya = get_pt( p1.1 , p2.1 , j );
+        let xb = get_pt( p2.0 , p3.0 , j );
+        let yb = get_pt( p2.1 , p3.1 , j );
+
+        let x = get_pt( xa , xb , j );
+        let y = get_pt( ya , yb , j );
+
+        canvas.rect(x, y, 1.0, 1.0);
+    }
+    canvas.stroke();
+}
+
+fn get_pt(n1: f64, n2: f64, perc: f64) -> f64 {
+    let diff = n2 - n1;
+    n1 + (diff * perc)
+}
+
+pub fn draw_cubic_bezier(canvas: &CanvasRenderingContext2d, p1: PointCords, p2: PointCords, p3: PointCords, p4: PointCords) {
+    for i in 0..100 {
+        let j = (i as f64) * 0.01;
+
+        let xa1 = get_pt( p1.0 ,p2.0 , j );
+        let ya1 = get_pt( p1.1 , p2.1 , j );
+        let xb1 = get_pt( p2.0 , p3.0 , j );
+        let yb1 = get_pt( p2.1 , p3.1 , j );
+        let xb2 = get_pt( p3.0 , p4.0 , j );
+        let yb2 = get_pt( p3.1 , p4.1 , j );
+
+        let k1 = PointCords(xa1, ya1);
+        let k2 = PointCords(xb1, yb1);
+        let k3 = PointCords(xb2, yb2);
+
+        let xa = get_pt( k1.0 ,k2.0 , j );
+        let ya = get_pt( k1.1 , k2.1 , j );
+        let xb = get_pt( k2.0 , k3.0 , j );
+        let yb = get_pt( k2.1 , k3.1 , j );
+
+        let x = get_pt( xa , xb , j );
+        let y = get_pt( ya , yb , j );
+
+        canvas.rect(x, y, 1.0, 1.0);
+    }
+    canvas.stroke();
+}

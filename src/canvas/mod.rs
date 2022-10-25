@@ -3,6 +3,8 @@ pub use wasm_bindgen::prelude::*;
 use web_sys::Document;
 use web_sys::HtmlInputElement;
 use web_sys::CanvasRenderingContext2d;
+use crate::draw::draw_cubic_bezier;
+use crate::draw::draw_quadratic_bezier;
 use crate::polygon::*;
 use crate::data_models::*;
 
@@ -63,6 +65,8 @@ impl Canvas {
             .unwrap();
         context.set_line_width(3.0);
         context.set_font("30px serif");
+        draw_quadratic_bezier(&context, PointCords(100.0, 100.0), PointCords(150.0, 50.0), PointCords(200.0, 100.0));
+        draw_cubic_bezier(&context, PointCords(100.0, 300.0), PointCords(150.0, 150.0), PointCords(400.0, 250.0), PointCords(200.0, 300.0));
         Canvas{
             context,
             state: State::Create,
