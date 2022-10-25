@@ -4,7 +4,7 @@ use crate::{data_models::*, polygon::Polygon};
 const LINE_MARGIN: f64 = 15.0;
 const POINT_MARGIN: f64 = 200.0;
 
-pub fn calcualate_new_lines<'a>(points: Vec<&'a Point>) -> Vec<Line>{
+pub fn calcualate_new_lines(points: Vec<&Point>) -> Vec<Line>{
     if points.len() < 3 {
         return vec![];
     }

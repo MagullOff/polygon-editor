@@ -110,7 +110,7 @@ async function setHandlers() {
         setPressedButton(radioRules);
         rulesContainer.classList.remove("settingsHidden");
         isLengthConst.checked = false;
-        lengthSelector.value = 0.00;
+        lengthSelector.value = undefined;
         canvasRef.set_rules_state();
     }
     

@@ -282,6 +282,21 @@ impl Canvas{
                             break;
                         },
                         Some(PressedObject::Point(id)) => {
+                            if self.polygons[i].points.len() <= 3 {
+                                for k in 0..self.polygons[i].lines.len() {
+                                    match self.polygons[i].lines[k].relation {
+                                        Some(line_id) => {
+                                            for j in 0..len {
+                                                self.polygons[j].set_relation(line_id, None);
+                                            }
+                                        },
+                                        None => {}
+                                    }
+                                }
+                                self.polygons.remove(i);
+                                self.draw();
+                                break;
+                            }
                             for j in  0..self.polygons[i].lines.len() {
                                 if self.polygons[i].lines[j].points.1 == id || self.polygons[i].lines[j].points.0 == id {
                                     let rel = self.polygons[i].lines[j].relation;
@@ -296,19 +311,6 @@ impl Canvas{
                                 }
                             }
                             self.polygons[i].remove_point_of_id(id);
-                            if self.polygons[i].points.len() < 3 {
-                                for k in 0..self.polygons[i].lines.len() {
-                                    match self.polygons[i].lines[k].relation {
-                                        Some(line_id) => {
-                                            for j in 0..len {
-                                                self.polygons[j].set_relation(line_id, None);
-                                            }
-                                        },
-                                        None => {}
-                                    }
-                                }
-                                self.polygons.remove(i);
-                            }
                             self.draw();
                             break;
                         }
