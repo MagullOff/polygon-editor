@@ -50,14 +50,19 @@ impl Polygon {
             .unwrap()
     }
 
-    pub fn remove_point_of_id(&mut self, id: u32) {
+    pub fn remove_point_of_id(&mut self, id: u32, preserve: bool) {
         for i in 0..self.points.len() {
             if self.points[i].id == id {
                 self.points.remove(i);
                 break;
             }
         }
-        self.lines = calcualate_new_lines(self.points.iter().collect());
+        self.lines = if preserve {
+            calculate_new_lines_preserving_relations(self.points.iter().collect(), self.lines.iter().collect())
+        } else {
+            calcualate_new_lines(self.points.iter().collect())
+        };
+
         self.center = get_centroid(&self.points);
     }
 
@@ -73,10 +78,22 @@ impl Polygon {
         }
 
         for i in 0..self.lines.len() {
-            let p1 = self.get_point_by_id(self.lines[i].points.0);
-            let p2 = self.get_point_by_id(self.lines[i].points.1);
-            if check_line_hover(p1, p2, PointCords(x,y)) {
-                return Some(PressedObject::Line(self.lines[i].id, (x - p1.0, y - p1.1)));
+            match self.lines[i].bezier {
+                Some((p1,p2)) => {
+                    if check_point_hover(p1, PointCords(x,y)) {
+                        return Some(PressedObject::BesierLine(self.lines[i].id, 1));
+                    }
+                    if check_point_hover(p2, PointCords(x,y)) {
+                        return Some(PressedObject::BesierLine(self.lines[i].id, 2));
+                    }
+                },
+                None => {
+                    let p1 = self.get_point_by_id(self.lines[i].points.0);
+                    let p2 = self.get_point_by_id(self.lines[i].points.1);
+                    if check_line_hover(p1, p2, PointCords(x,y)) {
+                        return Some(PressedObject::Line(self.lines[i].id, (x - p1.0, y - p1.1)));
+                    }
+                }
             }
         }
 
@@ -120,6 +137,15 @@ impl Polygon {
             }
         }
         res
+    }
+
+    pub fn set_bezier(&mut self, line_id: u32, bezier: Option<(PointCords,PointCords)>) {
+        for i in 0..self.lines.len() {
+            if self.lines[i].id == line_id {
+                self.lines[i].bezier = bezier;
+                break;
+            }
+        }
     }
 }
 

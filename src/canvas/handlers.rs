@@ -24,6 +24,19 @@ impl Canvas{
         self.draw();
     }
 
+    pub fn make_bezier(&mut self){
+        match self.state {
+            State::Rules(Some((polygon_id, line_id))) =>{
+                let line_cords = self.get_line_by_id(line_id);
+                let bezier_cords = get_bezier_cords(line_cords);
+                self.polygons[polygon_id].set_bezier(line_id, Some(bezier_cords));
+                self.state = State::Rules(None);
+                self.draw();
+            },
+            _ => {}
+        }
+    }
+
     pub fn remove_relations(&mut self){
         match self.state {
             State::Rules(Some((polygon_id, line_id))) => {
@@ -140,6 +153,20 @@ impl Canvas{
                                 point.y = point.y + difference_vec.1;
                             });
 
+                        polygon.lines
+                            .iter_mut()
+                            .for_each(|line| {
+                                match line.bezier {
+                                    Some((p1,p2)) => {
+                                        line.bezier = Some((
+                                                PointCords(p1.0 + difference_vec.0, p1.1 + difference_vec.1),
+                                                PointCords(p2.0 + difference_vec.0, p2.1 + difference_vec.1),
+                                                ))
+                                    },
+                                    None => {}
+                                };
+                            });
+
                         polygon.center.0 = x;
                         polygon.center.1 = y;
 
@@ -173,6 +200,16 @@ impl Canvas{
                         self.correct_line_length(px_id, p_id, true);
                         self.reset_visited();
                         self.recalculate();
+                        self.draw();
+                    },
+                    PressedObject::BesierLine(line_id, point) => {
+                        let mut line = self.polygons[*id].get_line_reference(*line_id);
+                        let old_bezier = line.bezier.unwrap();
+                        if *point == 1 {
+                            line.bezier = Some((PointCords(x,y), old_bezier.1))
+                        } else {
+                            line.bezier = Some((old_bezier.0, PointCords(x,y)))
+                        }
                         self.draw();
                     }
                 }
@@ -213,6 +250,13 @@ impl Canvas{
                             let hovered_point_cords = self.polygons[i].get_point_by_id(id);
                             highlight_point(&self.context, hovered_point_cords);
                             break;
+                        },
+                        Some(PressedObject::BesierLine(line_id, point)) => {
+                            if point == 1 {
+                                highlight_point(&self.context, self.polygons[i].get_line_reference(line_id).bezier.unwrap().0);
+                            } else {
+                                highlight_point(&self.context, self.polygons[i].get_line_reference(line_id).bezier.unwrap().1);
+                            }
                         }
                         None => {}
                     }
@@ -298,15 +342,15 @@ impl Canvas{
                                     let rel = self.polygons[i].lines[j].relation;
                                     match rel {
                                         Some(line_id) => {
-                                            for j in  0..len {
-                                                self.polygons[j].set_relation(line_id, None);
+                                            for h in 0..len {
+                                                self.polygons[h].set_relation(line_id, None);
                                             }
                                         },
                                         None => {}
                                     }
                                 }
                             }
-                            self.polygons[i].remove_point_of_id(id);
+                            self.polygons[i].remove_point_of_id(id, true);
                             self.draw();
                             break;
                         }

@@ -2,7 +2,7 @@ use crate::{data_models::{PointCords, Point}, utils::get_line_length};
 use super::Canvas;
 
 impl Canvas {
-    fn get_line_by_id(&self, id: u32) -> (PointCords, PointCords) {
+    pub fn get_line_by_id(&self, id: u32) -> (PointCords, PointCords) {
         for i in 0..self.polygons.len() {
             if self.polygons[i].lines.iter().any(|line| line.id == id) {
                 let (p1, p2) = self.polygons[i].get_line_by_id(id);

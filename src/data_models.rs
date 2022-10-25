@@ -5,7 +5,8 @@ pub struct Line{
     pub id:  u32,
     pub is_const: bool,
     pub relation: Option<u32>,
-    pub visited: bool
+    pub visited: bool,
+    pub bezier: Option<(PointCords, PointCords)>
 }
 
 #[derive(Copy,Clone)]

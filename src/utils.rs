@@ -21,7 +21,42 @@ pub fn calcualate_new_lines(points: Vec<&Point>) -> Vec<Line>{
                 id: rng.gen(),
                 is_const: false,
                 relation: None,
-                visited: false
+                visited: false,
+                bezier: None
+            });
+            last_point = point;
+            last_point_id = point.id;
+        });
+    lines
+}
+
+pub fn calculate_new_lines_preserving_relations(points: Vec<&Point>, old_lines: Vec<&Line>) -> Vec<Line>{
+    if points.len() < 3 {
+        return vec![];
+    }
+    let mut lines: Vec<Line> = vec![];
+    let mut last_point= points.last().unwrap();
+    let mut last_point_id = last_point.id;
+    let mut rng = rand::thread_rng();
+    points
+        .iter()
+        .for_each(|point| {
+            let mut rel: Option<u32> =  None;
+            for i in 0..old_lines.len() {
+                if (old_lines[i].points.1 == last_point_id  && old_lines[i].points.0 == point.id) 
+                    || (old_lines[i].points.0 == last_point_id  && old_lines[i].points.1 == point.id) {
+                    rel = old_lines[i].relation;
+                    break;
+                }
+            }
+            lines.push(Line {
+                points: (last_point_id, point.id),
+                length: get_line_length(PointCords(last_point.x, last_point.y), PointCords(point.x, point.y)),
+                id: rng.gen(),
+                is_const: false,
+                relation: rel,
+                visited: false,
+                bezier: None
             });
             last_point = point;
             last_point_id = point.id;
@@ -77,7 +112,8 @@ pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, 
             ),
             is_const: false,
             relation: None,
-            visited: false
+            visited: false,
+            bezier: None
         },
         Line{
             id: rng.gen(),
@@ -88,7 +124,8 @@ pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, 
             ),
             is_const: false,
             relation: None,
-            visited: false
+            visited: false,
+            bezier: None
         })
 }
 
@@ -96,3 +133,12 @@ pub fn check_if_parallel(l1: (PointCords, PointCords), l2: (PointCords, PointCor
     (((l1.1.0 - l1.0.0)/(l1.1.1 - l1.1.0)) - ((l2.1.0 - l2.0.0)/(l2.1.1 - l2.1.0))).abs() < 0.01
 }
 
+pub fn get_bezier_cords(point_cords: (PointCords, PointCords)) -> (PointCords, PointCords) {
+    let p1 = point_cords.0;
+    let p2 = point_cords.1;
+    let x_len = p2.0 - p1.0;
+    let y_len = p2.1 - p1.1;
+    let r1 = PointCords(p1.0 + (x_len/4.0), p1.1 + (y_len/4.0));
+    let r2 = PointCords(p1.0 + 3.0*(x_len/4.0), p1.1 + 3.0*(y_len/4.0));
+    (r1,r2)
+}

@@ -10,6 +10,7 @@ const cords = document.querySelector(".cords");
 const rulesContainer = document.querySelector(".rulesContainer");
 
 const removeRelationsButton = document.querySelector("#RemoveRelations");
+const makeBezier = document.querySelector("#MakeBezier");
 
 const radioCreate = document.querySelector("#Edit");
 const radioEdit = document.querySelector("#Highlight");
@@ -127,6 +128,11 @@ async function setHandlers() {
     bresenhamButton.onclick = () => {
         console.log('bresenham click');
         canvasRef.draw_bresenham();
+    }
+
+    makeBezier.onclick = () => {
+        console.log('Bezier click');
+        canvasRef.make_bezier();
     }
 
     lengthSelector.onchange = (event) => {

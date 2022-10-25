@@ -52,9 +52,9 @@ fn draw_bresenham_line(context: &CanvasRenderingContext2d, x: PointCords, y: Poi
     let mut x = x0;
     while x <= x1 {
         if steep {
-            context.rect(y, x, 1.0, 1.0);
+            context.rect(y, x, 0.1, 0.1);
         } else {
-            context.rect(x, y, 1.0, 1.0);
+            context.rect(x, y, 0.1, 0.1);
         }
 
         error2 += derror2;

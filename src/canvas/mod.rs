@@ -3,8 +3,6 @@ pub use wasm_bindgen::prelude::*;
 use web_sys::Document;
 use web_sys::HtmlInputElement;
 use web_sys::CanvasRenderingContext2d;
-use crate::draw::draw_cubic_bezier;
-use crate::draw::draw_quadratic_bezier;
 use crate::polygon::*;
 use crate::data_models::*;
 
@@ -23,6 +21,7 @@ pub enum State{
 pub enum PressedObject {
     Center,
     Line(u32,(f64, f64)),
+    BesierLine(u32, u32),
     Point(u32)
 }
 
