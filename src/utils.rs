@@ -29,9 +29,9 @@ pub fn calcualate_new_lines(points: Vec<&Point>) -> Vec<Line>{
     lines
 }
 
-pub fn get_click_point(p1: PointCords, p2: PointCords, offset_x: f64) -> PointCords {
-    let x: f64 = p1.0 + offset_x;
-    let y: f64 = (offset_x * (p2.1 - p1.1))/(p2.0-p1.0) + p1.1;
+pub fn get_click_point(p1: PointCords, offset: (f64, f64)) -> PointCords {
+    let x: f64 = p1.0 + offset.0;
+    let y: f64 = offset.1 + p1.1;
     PointCords(x,y)
 }
 

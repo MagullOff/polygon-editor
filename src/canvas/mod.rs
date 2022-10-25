@@ -22,7 +22,7 @@ pub enum State{
 
 pub enum PressedObject {
     Center,
-    Line(u32,f64),
+    Line(u32,(f64, f64)),
     Point(u32)
 }
 
@@ -65,8 +65,6 @@ impl Canvas {
             .unwrap();
         context.set_line_width(3.0);
         context.set_font("30px serif");
-        draw_quadratic_bezier(&context, PointCords(100.0, 100.0), PointCords(150.0, 50.0), PointCords(200.0, 100.0));
-        draw_cubic_bezier(&context, PointCords(100.0, 300.0), PointCords(150.0, 150.0), PointCords(400.0, 250.0), PointCords(200.0, 300.0));
         Canvas{
             context,
             state: State::Create,
