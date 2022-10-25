@@ -110,15 +110,28 @@ impl Polygon {
             .relation
     }
 
-    pub fn set_relation(&mut self, line_id: u32, related_line_id: u32){
+    pub fn set_relation(&mut self, line_id: u32, related_line_id: Option<u32>){
         let mut i = 0;
         while i < self.lines.len() {
             if self.lines[i].id == line_id {
-                self.lines[i].relation = Some(related_line_id);
+                self.lines[i].relation = related_line_id;
                 break;
             }
             i = i + 1;
         }
+    }
+
+    pub fn constains_line(&self, line_id: u32) -> bool {
+        let mut i = 0;
+        let mut res = false;
+        while i < self.lines.len() {
+            if self.lines[i].id == line_id {
+                res = true;
+                break;
+            }
+            i = i + 1;
+        }
+        res
     }
 }
 

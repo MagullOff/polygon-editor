@@ -20,6 +20,8 @@ impl Canvas {
             let mut k = 0;
             while k < self.polygons[j].lines.len() {
                 if self.polygons[j].lines[k].id == related_line_id {
+                    if self.polygons[j].lines[k].visited == true {return}
+                    self.polygons[j].lines[k].visited = true;
                     let (p1, p2) = self.get_line_by_id(line_id);
                     let (p3_id, p4_id) = self.polygons[j].lines[k].points;
                     let p3 = self.polygons[j].get_point_by_id(p3_id);
@@ -93,7 +95,8 @@ impl Canvas {
         && (((if is_direction_forward {self.polygons[polygon_id].lines[line_index].points.0} else {self.polygons[polygon_id].lines[line_index].points.1} != point_id) && x == true)
             || x == false){
             x = true;
-
+            if self.polygons[polygon_id].lines[line_index].visited == true {return}
+            self.polygons[polygon_id].lines[line_index].visited = true;
             if self.polygons[polygon_id].lines[line_index].is_const {
                 let p1 =self.polygons[polygon_id].get_point_by_id(self.polygons[polygon_id].lines[line_index].points.0);
                 let p2 = self.polygons[polygon_id].get_point_by_id(self.polygons[polygon_id].lines[line_index].points.1);
@@ -141,5 +144,34 @@ impl Canvas {
                 false => {line_index = if line_index ==  0 {self.polygons[polygon_id].lines.len() - 1} else {line_index - 1};}
             }
         }
+    }
+
+    pub fn reset_visited(&mut self){
+        let mut i = 0;
+        while i < self.polygons.len() {
+            let mut j = 0;
+            while j < self.polygons[i].lines.len() {
+                self.polygons[i].lines[j].visited = false;
+                j = j + 1;
+            }
+            i = i + 1;
+        }
+    }
+
+    pub fn recalculate(&mut self){
+        let mut i = 0;
+        while i < self.polygons.len() {
+            self.polygons[i].recalculate();
+            i = i + 1;
+        }
+    }
+
+    pub fn clear_current_points(&mut self) -> Vec<Point> {
+        let mut points: Vec<Point> = vec![];
+        while !self.current_points.is_empty() {
+            let point = self.current_points.pop().unwrap();
+            points.push(point);
+        }
+        points
     }
 }

@@ -92,9 +92,17 @@ body {
     transition: transform 0.5s;
 }
 
+.settingsHidden{
+    visibility: hidden; 
+}
+
 .details{
     flex: 1;
     padding: 20px;
+}
+
+.removeContainer > button{
+    top: 15px;
 }
 
 canvas{
@@ -125,7 +133,7 @@ canvas{
     gap: 10px;
 }
 
-.settings > button{
+button{
     font-size: 18px;
     outline: none;
     background: none;
@@ -141,7 +149,7 @@ canvas{
     letter-spacing: 3px;
 }
 
-.settings > button:hover{
+button:hover{
     background-color: rgb(29, 0, 77);
 }
 

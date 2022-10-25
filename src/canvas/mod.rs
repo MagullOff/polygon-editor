@@ -9,6 +9,7 @@ use crate::data_models::*;
 pub mod handlers;
 pub mod draw;
 pub mod utils;
+pub mod predefined;
 
 pub enum State{
     Create,

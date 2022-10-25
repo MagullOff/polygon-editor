@@ -1,24 +1,19 @@
-use wasm_bindgen::JsValue;
+use std::collections::HashMap;
+use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
 
 use crate::{data_models::Point, draw::{clear_canvas, BASIC_COLOR}};
 use super::Canvas;
 
+#[wasm_bindgen]
 impl Canvas {
-    pub fn clear_current_points(&mut self) -> Vec<Point> {
-        let mut points: Vec<Point> = vec![];
-        while !self.current_points.is_empty() {
-            let point = self.current_points.pop().unwrap();
-            points.push(point);
-        }
-        points
-    }
-
     pub fn draw(&self){
+        let relation_number = 0;
+        let mut relation_map: HashMap<u32, u32> = HashMap::new();
         clear_canvas(&self.context);
 
         self.polygons
             .iter()
-            .for_each(|polygon| polygon.draw(&self.context));
+            .for_each(|polygon| polygon.draw(&self.context, relation_number, &mut relation_map));
 
         self.current_points
             .first()
@@ -32,7 +27,7 @@ impl Canvas {
             .for_each(|Point{x,y, id}| {
                 if *id != 0 {
                     self.context.set_line_width(4.0);
-                    self.context.arc(*x, *y, 5.0, 0.0, 2.0*3.14).unwrap();
+                    self.context.arc(*x, *y, 5.0, 0.0, 2.0*std::f64::consts::PI).unwrap();
                     self.context.fill();
                 }
                 self.context.set_line_width(3.0);

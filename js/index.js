@@ -1,5 +1,5 @@
 const leftButton = 0;
-
+let isHidden = false;
 const canvasContainer = document.querySelector('.canvasContainer');
 const canvas = document.querySelector('canvas');
 const boundingRect = canvasContainer.getBoundingClientRect();
@@ -7,6 +7,9 @@ canvas.height = boundingRect.height
 canvas.width = boundingRect.width
 
 const cords = document.querySelector(".cords");
+const rulesContainer = document.querySelector(".rulesContainer");
+
+const removeRelationsButton = document.querySelector("#RemoveRelations");
 
 const radioCreate = document.querySelector("#Edit");
 const radioEdit = document.querySelector("#Highlight");
@@ -91,19 +94,27 @@ async function setHandlers() {
     radioCreate.onclick = () => {
         console.log('radion click');
         setPressedButton(radioCreate);
+        rulesContainer.classList.add("settingsHidden");
         canvasRef.set_create_state();
     };
 
     radioEdit.onclick = () => {
         console.log('highlight click');
         setPressedButton(radioEdit);
+        rulesContainer.classList.add("settingsHidden");
         canvasRef.set_edit_state();
     };
 
     radioRules.onclick = () => {
         console.log('rules click');
         setPressedButton(radioRules);
+        rulesContainer.classList.remove("settingsHidden");
         canvasRef.set_rules_state();
+    }
+    
+    removeRelationsButton.onclick = () => {
+        console.log('removeRelations click');
+        canvasRef.remove_relations();
     };
 
     sceneButton.onclick = () => {

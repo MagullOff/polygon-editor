@@ -14,9 +14,7 @@ pub const HIGHLIGHT_COLOR: &str = "rgb(207, 52, 121)";
 pub const CONSTANT_COLOR: &str = "rgb(141, 55, 179)";
 
 impl Polygon{
-    pub fn draw(&self, context: &CanvasRenderingContext2d){
-        let mut relation_number: u32 = 0;
-        let mut relation_map: HashMap<u32, u32> = HashMap::new();
+    pub fn draw(&self, context: &CanvasRenderingContext2d, mut relation_number: u32, relation_map: &mut HashMap<u32, u32> ){
         context.set_line_width(3.0);
         self.lines
             .iter()
@@ -36,7 +34,7 @@ impl Polygon{
                             relation_number
                         };
                         context.set_font("30px serif");
-                        context.fill_text(rel_num.to_string().as_str(), mid.0, mid.1).unwrap();
+                        context.fill_text(rel_num.to_string().as_str(), mid.0+20.0, mid.1).unwrap();
                     },
                     _ => {}
                 }

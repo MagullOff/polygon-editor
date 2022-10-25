@@ -4,7 +4,8 @@ pub struct Line{
     pub length: f64,
     pub id:  u32,
     pub is_const: bool,
-    pub relation: Option<u32>
+    pub relation: Option<u32>,
+    pub visited: bool
 }
 
 #[derive(Copy,Clone)]
