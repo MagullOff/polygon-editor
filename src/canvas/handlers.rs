@@ -31,10 +31,8 @@ impl Canvas{
                 self.polygons[polygon_id].set_relation(line_id, None);
                 match relation {
                     Some(id) => {
-                        let mut j = 0;
-                        while j < self.polygons.len() {
+                        for j in 0..self.polygons.len() {
                             self.polygons[j].set_relation(id, None);
-                            j = j + 1;
                         }
                     },
                     None => {}
@@ -78,13 +76,11 @@ impl Canvas{
         match &self.state {
             State::Edit => {
                 self.draw();
-                let mut i = 0;
-                while i<self.polygons.len() {
+                for i in 0..self.polygons.len() {
                     match self.polygons[i].check_hover(x, y){
                         Some(pressed_object) => {self.state = State::Moving((i, pressed_object)); break;},
                         _ => {}
                     }
-                    i = i+1;
                 }
             },
             _ => {}
@@ -102,16 +98,10 @@ impl Canvas{
             State::Moving(_) => {self.state = State::Edit},
             State::Rules(_) => {
                 self.draw();
-                use web_sys::console;
-                let mut i = 0;
-                while i<self.polygons.len() {
+                for i in 0..self.polygons.len() {
                     match self.polygons[i].check_hover(x, y){
                         Some(PressedObject::Line(id,_)) => {
                             self.state = State::Rules(Some((i, id)));
-                            console::log_2(
-                                &JsValue::from_f64(i as f64),
-                                &JsValue::from_f64(id as f64)
-                            );
                             let (x_id,y_id) = self.polygons[i].get_line_by_id(id);
                             let x = self.polygons[i].get_point_by_id(x_id);
                             let y = self.polygons[i].get_point_by_id(y_id);
@@ -123,7 +113,6 @@ impl Canvas{
                         },
                         _ => {}
                     }
-                    i = i+1;
                 }
             },
             _ => {},
@@ -194,8 +183,7 @@ impl Canvas{
             },
             State::Rules(Some((polygon_id, line_id))) => {
                 self.draw();
-                let mut i = 0;
-                while i<self.polygons.len() {
+                for i in 0..self.polygons.len() {
                     match self.polygons[i].check_hover(x,y){
                         Some(PressedObject::Line(id, _)) =>{
                             let (p1_id, p2_id) = self.polygons[i].get_line_by_id(id);
@@ -206,7 +194,6 @@ impl Canvas{
                         },
                         _ => {}
                     }
-                    i = i+1;
                 }
 
                 let (x_id,y_id) = self.polygons[*polygon_id].get_line_by_id(*line_id);
@@ -216,8 +203,7 @@ impl Canvas{
             },
             _ => {
                 self.draw();
-                let mut i = 0;
-                while i<self.polygons.len() {
+                for i in 0..self.polygons.len() {
                     match self.polygons[i].check_hover(x,y){
                         Some(PressedObject::Center) => {highlight_point(&self.context, self.polygons[i].center); break;},
                         Some(PressedObject::Line(id, _)) =>{
@@ -234,7 +220,6 @@ impl Canvas{
                         }
                         None => {}
                     }
-                    i = i+1;
                 }
             },
         }
@@ -255,19 +240,16 @@ impl Canvas{
             },
             State::Edit => {
                 self.draw();
-                let mut i = 0;
                 let len = self.polygons.len();
-                while i<len {
+                for i in 0..len {
                     match self.polygons[i].check_hover(x, y){
                         Some(PressedObject::Line(id,_)) => {
                             let (p1_id, p2_id) = self.polygons[i].get_line_by_id(id);
                             let relation = self.polygons[i].get_line_relation(id);
                             match relation {
                                 Some(id) => {
-                                    let mut j = 0;
-                                    while j < len {
+                                    for j in 0..len {
                                         self.polygons[j].set_relation(id, None);
-                                        j = j + 1;
                                     }
                                 },
                                 None => {}
@@ -300,38 +282,30 @@ impl Canvas{
                             break;
                         },
                         Some(PressedObject::Point(id)) => {
-                            let mut j = 0;
-                            while j < self.polygons[i].lines.len() {
+                            for j in  0..self.polygons[i].lines.len() {
                                 if self.polygons[i].lines[j].points.1 == id || self.polygons[i].lines[j].points.0 == id {
                                     let rel = self.polygons[i].lines[j].relation;
                                     match rel {
                                         Some(line_id) => {
-                                            let mut j = 0;
-                                            while j < len {
+                                            for j in  0..len {
                                                 self.polygons[j].set_relation(line_id, None);
-                                                j = j + 1;
                                             }
                                         },
                                         None => {}
                                     }
                                 }
-                                j = j + 1;
                             }
                             self.polygons[i].remove_point_of_id(id);
                             if self.polygons[i].points.len() < 3 {
-                                let mut k = 0;
-                                while k < self.polygons[i].lines.len() {
+                                for k in 0..self.polygons[i].lines.len() {
                                     match self.polygons[i].lines[k].relation {
                                         Some(line_id) => {
-                                            let mut j = 0;
-                                            while j < len {
+                                            for j in 0..len {
                                                 self.polygons[j].set_relation(line_id, None);
-                                                j = j + 1;
                                             }
                                         },
                                         None => {}
                                     }
-                                    k = k + 1;
                                 }
                                 self.polygons.remove(i);
                             }
@@ -339,19 +313,15 @@ impl Canvas{
                             break;
                         }
                         Some(PressedObject::Center) => {
-                            let mut k = 0;
-                            while k < self.polygons[i].lines.len() {
+                            for k in  0..self.polygons[i].lines.len() {
                                 match self.polygons[i].lines[k].relation {
                                     Some(line_id) => {
-                                        let mut j = 0;
-                                        while j < len {
+                                        for j in 0..len {
                                             self.polygons[j].set_relation(line_id, None);
-                                            j = j + 1;
                                         }
                                     },
                                     None => {}
                                 }
-                                k = k + 1;
                             }
                             self.polygons.remove(i);
                             self.draw();
@@ -359,14 +329,12 @@ impl Canvas{
                         },
                         _ => {}
                     }
-                    i = i+1;
                 }
                 self.draw();
             },
             State::Rules(Some((old_polygon_id, old_line_id))) => {
                 self.draw();
-                let mut i = 0;
-                while i<self.polygons.len() {
+                for i in 0..self.polygons.len() {
                     match self.polygons[i].check_hover(x, y){
                         Some(PressedObject::Line(new_line_id,_)) => {
                             if new_line_id == old_line_id {return;}
@@ -384,7 +352,6 @@ impl Canvas{
                         },
                         _ => {}
                     }
-                    i = i+1;
                 }
                 self.recalculate();
                 self.draw();

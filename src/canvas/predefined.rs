@@ -10,13 +10,13 @@ impl Canvas {
         clear_canvas(&self.context);
         let points1 = vec![
             Point {
-                x: 330.0,
-                y: 220.0,
+                x: 100.0,
+                y: 100.0,
                 id: 1
             },
             Point {
                 x: 200.0,
-                y: 50.0,
+                y: 200.0,
                 id: 2
             },
             Point {
@@ -31,24 +31,24 @@ impl Canvas {
 
         let points2 = vec![
             Point {
-                x: 80.0,
-                y: 70.0,
-                id: 4
-            },
-            Point {
-                x: 250.0,
-                y: 90.0,
+                x: 300.0,
+                y: 200.0,
                 id: 5
             },
             Point {
-                x: 220.0,
-                y: 300.0,
-                id: 6
+                x: 200.0,
+                y: 100.0,
+                id: 4
             },
             Point {
                 x: 50.0,
                 y: 150.0,
                 id: 7
+            },
+            Point {
+                x: 220.0,
+                y: 300.0,
+                id: 6
             },
         ];
 
@@ -56,8 +56,8 @@ impl Canvas {
         let center2 = get_centroid(&points2);
 
         lines2[1].is_const = true;
-        lines2[0].relation = Some(lines1[1].id);
-        lines1[1].relation = Some(lines2[0].id);
+        lines2[1].relation = Some(lines1[1].id);
+        lines1[1].relation = Some(lines2[1].id);
 
         let polygon1 = Polygon {
             points: points1,

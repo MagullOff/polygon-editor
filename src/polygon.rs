@@ -51,13 +51,11 @@ impl Polygon {
     }
 
     pub fn remove_point_of_id(&mut self, id: u32) {
-        let mut i = 0;
-        while i<self.points.len() {
+        for i in 0..self.points.len() {
             if self.points[i].id == id {
                 self.points.remove(i);
                 break;
             }
-            i = i + 1;
         }
         self.lines = calcualate_new_lines(self.points.iter().collect());
         self.center = get_centroid(&self.points);
@@ -68,22 +66,18 @@ impl Polygon {
             return Some(PressedObject::Center);
         }
 
-        let mut i = 0;
-        while i<self.points.len() {
+        for i in 0..self.points.len() {
             if check_point_hover(PointCords(self.points[i].x, self.points[i].y), PointCords(x,y)) {
                 return Some(PressedObject::Point(self.points[i].id));
             }
-            i = i + 1;
         }
 
-        i = 0;
-        while i<self.lines.len() {
+        for i in 0..self.lines.len() {
             let p1 = self.get_point_by_id(self.lines[i].points.0);
             let p2 = self.get_point_by_id(self.lines[i].points.1);
             if check_line_hover(p1, p2, PointCords(x,y)) {
                 return Some(PressedObject::Line(self.lines[i].id, x - p1.0));
             }
-            i = i + 1;
         }
 
         None
@@ -92,13 +86,11 @@ impl Polygon {
     pub fn recalculate(&mut self){
         self.center = get_centroid(&self.points);
 
-        let mut i = 0;
-        while i < self.lines.len() {
+        for i in 0..self.lines.len() {
             let p1 = self.get_point_by_id(self.lines[i].points.0);
             let p2 = self.get_point_by_id(self.lines[i].points.1);
 
             self.lines[i].length = get_line_length(p1, p2);
-            i = i + 1;
         }
     }
 
@@ -111,25 +103,21 @@ impl Polygon {
     }
 
     pub fn set_relation(&mut self, line_id: u32, related_line_id: Option<u32>){
-        let mut i = 0;
-        while i < self.lines.len() {
+        for i in 0..self.lines.len() {
             if self.lines[i].id == line_id {
                 self.lines[i].relation = related_line_id;
                 break;
             }
-            i = i + 1;
         }
     }
 
     pub fn constains_line(&self, line_id: u32) -> bool {
-        let mut i = 0;
         let mut res = false;
-        while i < self.lines.len() {
+        for i in 0..self.lines.len() {
             if self.lines[i].id == line_id {
                 res = true;
                 break;
             }
-            i = i + 1;
         }
         res
     }
