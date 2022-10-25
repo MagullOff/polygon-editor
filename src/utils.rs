@@ -29,9 +29,9 @@ pub fn calcualate_new_lines(points: Vec<&Point>) -> Vec<Line>{
     lines
 }
 
-pub fn get_click_point(p1: PointCords, p2: PointCords, offset_x: f64) -> PointCords {
-    let x: f64 = p1.0 + offset_x;
-    let y: f64 = (offset_x * (p2.1 - p1.1))/(p2.0-p1.0) + p1.1;
+pub fn get_click_point(p1: PointCords, offset: (f64, f64)) -> PointCords {
+    let x: f64 = p1.0 + offset.0;
+    let y: f64 = offset.1 + p1.1;
     PointCords(x,y)
 }
 
@@ -95,3 +95,4 @@ pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, 
 pub fn check_if_parallel(l1: (PointCords, PointCords), l2: (PointCords, PointCords)) -> bool {
     (((l1.1.0 - l1.0.0)/(l1.1.1 - l1.1.0)) - ((l2.1.0 - l2.0.0)/(l2.1.1 - l2.1.0))).abs() < 0.01
 }
+

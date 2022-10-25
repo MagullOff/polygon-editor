@@ -76,7 +76,7 @@ impl Polygon {
             let p1 = self.get_point_by_id(self.lines[i].points.0);
             let p2 = self.get_point_by_id(self.lines[i].points.1);
             if check_line_hover(p1, p2, PointCords(x,y)) {
-                return Some(PressedObject::Line(self.lines[i].id, x - p1.0));
+                return Some(PressedObject::Line(self.lines[i].id, (x - p1.0, y - p1.1)));
             }
         }
 

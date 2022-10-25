@@ -145,21 +145,18 @@ impl Canvas{
 
                         self.polygons[*id].center = get_centroid(&self.polygons[*id].points);
                         self.draw();
-                        highlight_point(&self.context, PointCords(x,y));
                     },
                     PressedObject::Line(line_id, offset) => {
                         let (p1_id, p2_id)= self.polygons[*id].get_line_by_id(*line_id);
                         let p_id = *id;
                         let p1_val = self.polygons[*id].get_point_by_id(p1_id);
-                        let p2_val = self.polygons[*id].get_point_by_id(p2_id);
 
-                        let last_click_point = get_click_point(p1_val, p2_val, *offset);
+                        let last_click_point = get_click_point(p1_val, *offset);
 
                         let difference_vec = (x-last_click_point.0, y-last_click_point.1);
 
                         self.polygons[*id].modify_point_coordinates(p1_id, difference_vec);
                         self.polygons[*id].modify_point_coordinates(p2_id, difference_vec);
-                        highlight_line(&self.context, p1_val, p2_val);
                         self.correct_line_length(p1_id, p_id, false);
                         self.correct_line_length(p2_id, p_id, true);
                         self.reset_visited();
@@ -177,7 +174,6 @@ impl Canvas{
                         self.reset_visited();
                         self.recalculate();
                         self.draw();
-                        highlight_point(&self.context, PointCords(x,y));
                     }
                 }
             },
