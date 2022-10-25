@@ -3,22 +3,18 @@ use super::Canvas;
 
 impl Canvas {
     fn get_line_by_id(&self, id: u32) -> (PointCords, PointCords) {
-        let mut i = 0;
-        while i < self.polygons.len() {
+        for i in 0..self.polygons.len() {
             if self.polygons[i].lines.iter().any(|line| line.id == id) {
                 let (p1, p2) = self.polygons[i].get_line_by_id(id);
                 return (self.polygons[i].get_point_by_id(p1), self.polygons[i].get_point_by_id(p2))
             }
-            i = i + 1;
         }
         (PointCords(0.0, 0.0), PointCords(0.0, 0.0))
     }
 
     pub fn enforce_relation(&mut self, line_id: u32, related_line_id: u32) {
-        let mut j = 0;
-        while j < self.polygons.len() {
-            let mut k = 0;
-            while k < self.polygons[j].lines.len() {
+        for j in 0..self.polygons.len() {
+            for k in 0..self.polygons[j].lines.len() {
                 if self.polygons[j].lines[k].id == related_line_id {
                     if self.polygons[j].lines[k].visited == true {return}
                     self.polygons[j].lines[k].visited = true;
@@ -28,35 +24,29 @@ impl Canvas {
                     let px = (self.polygons[j].lines[k].length * (p1.0 - p2.0))/get_line_length(p1,p2) + p3.0;
                     let py = (if p1.1 > p2.1 {1.0} else {-1.0})*(self.polygons[j].lines[k].length.powi(2) - (px - p3.0).powi(2)).sqrt() + p3.1;
 
-                    let mut l = 0;
-                    while l < self.polygons[j].points.len() {
+                    for l in 0..self.polygons[j].points.len() {
                         if self.polygons[j].points[l].id == p4_id {
                             self.polygons[j].points[l] = Point{id: p4_id, x: px, y: py};
                             self.correct_line_length(p4_id, j, true);
                         }
-                        l = l + 1;
                     }
                 }
-                k = k + 1;
             }
-            j = j + 1;
         }
     }
 
     pub fn correct_line_mid(&mut self, extention: f64, line_id: u32, polygon_id: usize){
         let line = self.polygons[polygon_id].get_line_reference_inmut(line_id);
 
-        let mut i=0;
         let mut p0_index = 0;
         let mut p1_index = 0;
-        while i<self.polygons[polygon_id].points.len() {
+        for i in 0..self.polygons[polygon_id].points.len() {
             if self.polygons[polygon_id].points[i].id == line.points.1 {
                 p0_index = i;
             }
             if self.polygons[polygon_id].points[i].id == line.points.0 {
                 p1_index = i;
             }
-            i = i + 1;
         }
 
         let ratio = (self.polygons[polygon_id].points[p1_index].x - self.polygons[polygon_id].points[p0_index].x).abs()/(self.polygons[polygon_id].points[p1_index].y - self.polygons[polygon_id].points[p0_index].y).abs();
@@ -108,14 +98,12 @@ impl Canvas {
                 let ratio_x = 1.0/(1.0 + 1.0/(ratio*ratio)).sqrt();
                 let ratio_y = 1.0/(1.0 + ratio*ratio).sqrt();
 
-                let mut i=0;
                 let mut p2_index = 0;
-                while i<self.polygons[polygon_id].points.len() {
+                for i in 0..self.polygons[polygon_id].points.len() {
                     if self.polygons[polygon_id].points[i].id == if is_direction_forward {self.polygons[polygon_id].lines[line_index].points.1} else {self.polygons[polygon_id].lines[line_index].points.0} {
                         p2_index = i;
                         break;
                     }
-                    i = i + 1;
                 }
 
                 let multiplier = if is_direction_forward {1.0} else {-1.0};
@@ -147,22 +135,16 @@ impl Canvas {
     }
 
     pub fn reset_visited(&mut self){
-        let mut i = 0;
-        while i < self.polygons.len() {
-            let mut j = 0;
-            while j < self.polygons[i].lines.len() {
+        for i in 0..self.polygons.len() {
+            for j in 0..self.polygons[i].lines.len() {
                 self.polygons[i].lines[j].visited = false;
-                j = j + 1;
             }
-            i = i + 1;
         }
     }
 
     pub fn recalculate(&mut self){
-        let mut i = 0;
-        while i < self.polygons.len() {
+        for i in 0..self.polygons.len() {
             self.polygons[i].recalculate();
-            i = i + 1;
         }
     }
 

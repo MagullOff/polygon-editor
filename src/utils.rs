@@ -68,8 +68,7 @@ pub fn get_centroid(points: &Vec<Point>) -> PointCords {
 
 pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, Line) {
     let mut rng = rand::thread_rng();
-    (
-        Line {
+    (Line {
             id: rng.gen(),
             points: (x, s),
             length: get_line_length(
@@ -90,8 +89,7 @@ pub fn get_new_split_lines(polygon: &Polygon, x: u32, y: u32, s: u32) -> (Line, 
             is_const: false,
             relation: None,
             visited: false
-        }
-    )
+        })
 }
 
 pub fn check_if_parallel(l1: (PointCords, PointCords), l2: (PointCords, PointCords)) -> bool {

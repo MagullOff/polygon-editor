@@ -109,6 +109,8 @@ async function setHandlers() {
         console.log('rules click');
         setPressedButton(radioRules);
         rulesContainer.classList.remove("settingsHidden");
+        isLengthConst.checked = false;
+        lengthSelector.value = 0.00;
         canvasRef.set_rules_state();
     }
     
