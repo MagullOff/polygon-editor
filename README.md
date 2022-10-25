@@ -1,3 +1,21 @@
+# Polygon Editor
+Poniżej znajduje się instrukcja i założenia programu
+## Instrukcja obsługi programu
+Program operuje w 3 trybach widocznych na lewej stronie ekranu:
+1. Dodawanie
+2. Edycja
+3. Reguły
+### Tryb dodawania
+Kolejne wierzchołki dodajemy za pomocą lewego przycisku myszy. Do zakończenia tworzenia poligonu używamy prawego przycisku myszy.
+### Tryb Edycji
+Zapomocą lewego przycisku myszy ruszamy wierzchołkami, krawędziami oraz poligonami. Aby poruszyć poligonem należy ruszać zaznaczonym środkiem ciężkości poligona. Za pomocą prawego przycisku myszy możemy usuwać wierzchołki i poligony oraz dzielić krawędzie na pół.
+### Tryb reguł
+Aby użyć trybu reguł należy najpierw zaznaczyć krawędź za pomocą lewego przycisku myszy. Wtedy za pomocą prawego przycisku myszy możemy kliknąć na inną krawędź aby utworzyć z nią relację równoległości. Po lewo znajduje się menu za pomocą którego można ustalić długość zaznaczonej krawędzi, ustalić że będzie ona stałej długości oraz usunąć istniejącą relacje z krawędzi.
+### Przyciski
+W lewym dolnym rogu znajdują się 3 przyciski. Ich kliknięcie odpowiada za:
+1. Wyświetlenie pomocy
+2. Wyświetlenie predefiniowanej sceny
+3. Wygenerowania obecnej klatki za pomocą algorytmu Bresenhama.
 ## How to install
 
 ```sh
